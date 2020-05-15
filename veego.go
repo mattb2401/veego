@@ -32,7 +32,7 @@ func (s *Server) Run() error {
 	ctx, cancel := context.WithCancel(context.Background())
 	go func() {
 		oscall := <-c
-		log.Printf("system call:%+v", oscall)
+		fmt.Printf("%v", oscall)
 		cancel()
 	}()
 	fmt.Printf("Appliction booting on %s:%s...\n", s.Config.Host, s.Config.Port)
@@ -58,7 +58,7 @@ func (s *Server) Run() error {
 		cancel()
 	}()
 	if err := server.Shutdown(ctxShutDown); err != nil {
-		log.Fatalf("Application Shutdown Failed:%+s", err)
+		return err
 	}
 	return nil
 }
