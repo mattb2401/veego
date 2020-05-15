@@ -35,7 +35,6 @@ func (s *Server) Run() error {
 		fmt.Printf("%v", oscall)
 		cancel()
 	}()
-	fmt.Printf("Appliction booting on %s:%s...\n", s.Config.Host, s.Config.Port)
 	server := &http.Server{
 		Addr:         fmt.Sprintf("%s:%s", s.Config.Host, s.Config.Port),
 		WriteTimeout: time.Second * 15,
@@ -47,12 +46,12 @@ func (s *Server) Run() error {
 	}
 	go func() {
 		if err := server.ListenAndServe(); err != nil {
-			log.Fatalf("serve failed: %v", err.Error())
+			log.Fatalf("serve failed: %v \n", err.Error())
 		}
 	}()
-	fmt.Printf("Appliction running")
+	fmt.Printf("Appliction running on %s:%s...\n", s.Config.Host, s.Config.Port)
 	<-ctx.Done()
-	fmt.Printf("Appliction stopped")
+	fmt.Printf("Appliction stopped \n")
 	ctxShutDown, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer func() {
 		cancel()

@@ -9,7 +9,6 @@ require (
 	github.com/jinzhu/gorm v1.9.12
 	github.com/joho/godotenv v1.3.0
 	github.com/mattb2401/parsrus v0.0.0-20200214170347-bc27c55ec53a
-	github.com/xujiajun/gorouter v1.2.0 // indirect
 	gopkg.in/square/go-jose.v2 v2.5.1
 	gopkg.in/yaml.v2 v2.2.8
 )
