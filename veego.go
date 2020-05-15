@@ -12,12 +12,14 @@ import (
 type Server struct {
 	ConfigFile string
 	ConfigType string
+	BaseRouter *mux.Router
 }
 
-func NewVeegoServer(configFile string, configType string) *Server {
+func NewVeegoServer(configFile string, configType string, baseRouter *mux.Router) *Server {
 	server := &Server{
 		ConfigFile: configFile,
 		ConfigType: configType,
+		BaseRouter: baseRouter,
 	}
 	return server
 }
@@ -41,7 +43,6 @@ func (s *Server) Run() error {
 		return fmt.Errorf("config file type not supported")
 	}
 	fmt.Printf("Appliction running on %s:%s...\n", conf.Host, conf.Port)
-	router := NewRouter(mux.NewRouter())
 	server := &http.Server{
 		Addr:         fmt.Sprintf("%s:%s", conf.Host, conf.Port),
 		WriteTimeout: time.Second * 15,
@@ -49,7 +50,7 @@ func (s *Server) Run() error {
 		IdleTimeout:  time.Second * 60,
 		Handler: h.CORS(h.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization", "Access-Control-Allow-Origin"}),
 			h.AllowedMethods([]string{"GET"}),
-			h.AllowedOrigins([]string{"*"}))(router.Route),
+			h.AllowedOrigins([]string{"*"}))(s.BaseRouter),
 	}
 	if err := server.ListenAndServe(); err != nil {
 		return err
