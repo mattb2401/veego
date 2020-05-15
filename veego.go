@@ -15,7 +15,7 @@ type Server struct {
 	BaseRouter *mux.Router
 }
 
-func NewVeegoServer(configFile string, configType string, baseRouter *mux.Router) *Server {
+func NewServer(configFile string, configType string, baseRouter *mux.Router) *Server {
 	server := &Server{
 		ConfigFile: configFile,
 		ConfigType: configType,

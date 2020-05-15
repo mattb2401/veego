@@ -20,7 +20,7 @@ func TestRouter_Get(t *testing.T) {
 		t.Errorf("error occurred: %v", err.Error())
 	}
 	rec := httptest.NewRecorder()
-	router.Route.ServeHTTP(rec, req)
+	router.Router.ServeHTTP(rec, req)
 	if rec.Code != http.StatusOK {
 		t.Errorf("expected http code 200 but got %v", rec.Code)
 	}
@@ -38,7 +38,7 @@ func TestRouter_Post(t *testing.T) {
 		t.Errorf("error occurred: %v", err.Error())
 	}
 	rec := httptest.NewRecorder()
-	router.Route.ServeHTTP(rec, req)
+	router.Router.ServeHTTP(rec, req)
 	if rec.Code != http.StatusOK {
 		t.Errorf("expected http code 200 but got %v", rec.Code)
 	}
