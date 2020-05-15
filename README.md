@@ -26,6 +26,7 @@ go get github.com/mattb2401/veego
 Create a simple application server 
 ```Go
 import (
+    "net/http"
     "github.com/mattb2401/veego"
 )
 
