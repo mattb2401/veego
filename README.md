@@ -37,7 +37,7 @@ func main() {
 	}
 	baseRouter := veego.NewRouter(mux.NewRouter())
 	baseRouter.Get("/", func(w *http.ResponseWriter, r *http.Request){
-        w.Write(200)
+        w.Write([]byte(`{"code": 200}`))
         return
     })
     server := veego.NewServer()
