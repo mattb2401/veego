@@ -16,7 +16,7 @@ func TestResponse_RespondWithJSON(t *testing.T) {
 	router := NewRouter(rt)
 	router.Get("/test", func(w http.ResponseWriter, r *http.Request) {
 		response := NewResponse(w, "json")
-		response.JSON(map[string]interface{}{"code": 200})
+		response.JSON(map[string]interface{}{"code": 200}, 200)
 	})
 	req, err := http.NewRequest("GET", "/test", nil)
 	if err != nil {
@@ -48,7 +48,7 @@ func TestResponse_RespondWithXML(t *testing.T) {
 	router := NewRouter(rt)
 	router.Get("/test", func(w http.ResponseWriter, r *http.Request) {
 		response := NewResponse(w, "xml")
-		response.XML(map[string]interface{}{"code": 200}, "response")
+		response.XML(map[string]interface{}{"code": 200}, "response", 200)
 	})
 	req, err := http.NewRequest("GET", "/test", nil)
 	if err != nil {

@@ -1,8 +1,8 @@
 package veego
 
-type Controller struct {
+type controller struct {
 }
 
-type BaseController interface {
-	Validate(args map[string]string, params map[string]interface{}) error
+func NewController() *controller {
+	return &controller{}
 }

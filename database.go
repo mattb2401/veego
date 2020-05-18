@@ -12,7 +12,7 @@ import (
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 )
 
-type DatabaseManager struct {
+type databaseManager struct {
 	DatabaseURL string
 }
 
@@ -25,13 +25,13 @@ type dBParams struct {
 	Port     string
 }
 
-func NewDatabaseManager(databaseURL string) *DatabaseManager {
-	return &DatabaseManager{
+func NewDatabaseManager(databaseURL string) *databaseManager {
+	return &databaseManager{
 		DatabaseURL: databaseURL,
 	}
 }
 
-func (d *DatabaseManager) Connect() (*gorm.DB, error) {
+func (d *databaseManager) Connect() (*gorm.DB, error) {
 	params, err := d.UrlParser()
 	if err != nil {
 		return nil, err
@@ -51,12 +51,19 @@ func (d *DatabaseManager) Connect() (*gorm.DB, error) {
 		}
 		defer db.Close()
 		return db, nil
+	case "mssql":
+		db, err := gorm.Open("mssql", fmt.Sprintf("sqlserver://%s:%s@%s:%s?database=%s", params.Username, params.Password, params.Host, params.Port, params.Database))
+		if err != nil {
+			return nil, err
+		}
+		defer db.Close()
+		return db, nil
 	default:
 		return nil, errors.New("unknown Database schema")
 	}
 }
 
-func (d *DatabaseManager) UrlParser() (*dBParams, error) {
+func (d *databaseManager) UrlParser() (*dBParams, error) {
 	var host, port, path, password string
 	var err error
 	u, err := url.Parse(d.DatabaseURL)

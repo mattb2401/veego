@@ -13,20 +13,20 @@ import (
 	"github.com/gorilla/mux"
 )
 
-type Server struct {
+type server struct {
 	Config     *AppConfig
 	BaseRouter *mux.Router
 }
 
-func NewServer(config *AppConfig, baseRouter *mux.Router) *Server {
-	server := &Server{
+func NewServer(config *AppConfig, baseRouter *mux.Router) *server {
+	server := &server{
 		Config:     config,
 		BaseRouter: baseRouter,
 	}
 	return server
 }
 
-func (s *Server) Run() error {
+func (s *server) Run() error {
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt)
 	ctx, cancel := context.WithCancel(context.Background())
