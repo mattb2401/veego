@@ -8,7 +8,7 @@ func TestDatabase_URLParser(t *testing.T) {
 	config := NewAppConfig()
 	conf, err := config.LoadEnv(".env")
 	dbManager := NewDatabaseManager(conf.DatabaseURL)
-	params, err := dbManager.UrlParser()
+	params, err := dbManager.urlParser()
 	if err != nil {
 		t.Errorf("didn't expect any errors but here we are : %v", err.Error())
 	}
