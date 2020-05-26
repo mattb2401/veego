@@ -2,6 +2,7 @@ package validation
 
 import (
 	"fmt"
+	"github.com/fatih/structs"
 	"strconv"
 	"strings"
 )
@@ -20,7 +21,7 @@ var errortmpl = map[string]string{
 
 type Validator struct{}
 
-func (v *Validator) Validate(args map[string]string, params map[string]interface{}) error {
+func (v *Validator) Validate(args map[string]string, params interface{}) error {
 	for key, value := range args {
 		rules := strings.Split(value, "|")
 		if len(rules) >= 2 {
@@ -42,6 +43,11 @@ func (v *Validator) Validate(args map[string]string, params map[string]interface
 					arg := strings.Split(rule, ":")
 					length, _ := strconv.Atoi(arg[1])
 					if err := v.checkMinLength(key, length, params); err != nil {
+						return err
+					}
+					continue
+				case strings.Contains(value, "string"):
+					if err := v.checkIfString(key, params); err != nil {
 						return err
 					}
 					continue
@@ -70,6 +76,11 @@ func (v *Validator) Validate(args map[string]string, params map[string]interface
 					return err
 				}
 				continue
+			case strings.Contains(value, "string"):
+				if err := v.checkIfString(key, params); err != nil {
+					return err
+				}
+				continue
 			default:
 				return fmt.Errorf("invalid rule provided")
 			}
@@ -78,55 +89,145 @@ func (v *Validator) Validate(args map[string]string, params map[string]interface
 	return nil
 }
 
-func (v *Validator) checkRequired(key string, params map[string]interface{}) error {
-	for _, v := range params {
-		if _, ok := params[key]; ok {
-			switch v.(type) {
-			case int:
-				if v.(int) <= 0 {
-					return fmt.Errorf(errortmpl["length"], key)
+func (v *Validator) checkRequired(key string, params interface{}) error {
+	switch params.(type) {
+	case map[string]interface{}:
+		for _, v := range params.(map[string]interface{}) {
+			if _, ok := params.(map[string]interface{})[key]; ok {
+				switch v.(type) {
+				case int:
+					if v.(int) <= 0 {
+						return fmt.Errorf(errortmpl["length"], key)
+					}
+				case string:
+					if len(v.(string)) <= 0 {
+						return fmt.Errorf(errortmpl["required"], key)
+					}
 				}
-			case string:
-				if len(v.(string)) <= 0 {
-					return fmt.Errorf(errortmpl["required"], key)
-				}
+			} else {
+				return fmt.Errorf(errortmpl["required"], key)
 			}
-		} else {
-			return fmt.Errorf(errortmpl["required"], key)
+		}
+	case struct{}:
+		params = structs.Map(params.(struct{}))
+		for _, v := range params.(map[string]interface{}) {
+			if _, ok := params.(map[string]interface{})[key]; ok {
+				switch v.(type) {
+				case int:
+					if v.(int) <= 0 {
+						return fmt.Errorf(errortmpl["length"], key)
+					}
+				case string:
+					if len(v.(string)) <= 0 {
+						return fmt.Errorf(errortmpl["required"], key)
+					}
+				}
+			} else {
+				return fmt.Errorf(errortmpl["required"], key)
+			}
 		}
 	}
 	return nil
 }
 
-func (v *Validator) checkMaxLength(key string, rqlen int, params map[string]interface{}) error {
-	for _, v := range params {
-		if _, ok := params[key]; ok {
-			switch v.(type) {
-			case string:
-				if len(v.(string)) > rqlen {
-					return fmt.Errorf(errortmpl["max"], key, rqlen)
+func (v *Validator) checkMaxLength(key string, rqlen int, params interface{}) error {
+	switch params.(type) {
+	case map[string]interface{}:
+		for _, v := range params.(map[string]interface{}) {
+			if _, ok := params.(map[string]interface{})[key]; ok {
+				switch v.(type) {
+				case string:
+					if len(v.(string)) > rqlen {
+						return fmt.Errorf(errortmpl["max"], key, rqlen)
+					}
+				default:
+					return fmt.Errorf(errortmpl["string"], key)
 				}
-			default:
-				return fmt.Errorf(errortmpl["string"], key)
+				return nil
 			}
-			return nil
+		}
+	case struct{}:
+		params = structs.Map(params.(struct{}))
+		for _, v := range params.(map[string]interface{}) {
+			if _, ok := params.(map[string]interface{})[key]; ok {
+				switch v.(type) {
+				case string:
+					if len(v.(string)) > rqlen {
+						return fmt.Errorf(errortmpl["max"], key, rqlen)
+					}
+				default:
+					return fmt.Errorf(errortmpl["string"], key)
+				}
+				return nil
+			}
 		}
 	}
 	return nil
 }
 
-func (v *Validator) checkMinLength(key string, rqlen int, params map[string]interface{}) error {
-	for _, v := range params {
-		if _, ok := params[key]; ok {
-			switch v.(type) {
-			case string:
-				if len(v.(string)) <= rqlen {
-					return fmt.Errorf(errortmpl["min"], key, rqlen)
+func (v *Validator) checkMinLength(key string, rqlen int, params interface{}) error {
+	switch params.(type) {
+	case map[string]interface{}:
+		for _, v := range params.(map[string]interface{}) {
+			if _, ok := params.(map[string]interface{})[key]; ok {
+				switch v.(type) {
+				case string:
+					if len(v.(string)) <= rqlen {
+						return fmt.Errorf(errortmpl["min"], key, rqlen)
+					}
+				default:
+					return fmt.Errorf(errortmpl["string"], key)
 				}
-			default:
-				return fmt.Errorf(errortmpl["string"], key)
+				return nil
 			}
-			return nil
+		}
+		return nil
+	case struct{}:
+		params = structs.Map(params.(struct{}))
+		for _, v := range params.(map[string]interface{}) {
+			if _, ok := params.(map[string]interface{})[key]; ok {
+				switch v.(type) {
+				case string:
+					if len(v.(string)) <= rqlen {
+						return fmt.Errorf(errortmpl["min"], key, rqlen)
+					}
+				default:
+					return fmt.Errorf(errortmpl["string"], key)
+				}
+				return nil
+			}
+		}
+		return nil
+	}
+	return nil
+}
+
+func (v *Validator) checkIfString(key string, params interface{}) error {
+	switch params.(type) {
+	case map[string]interface{}:
+		for _, v := range params.(map[string]interface{}) {
+			if _, ok := params.(map[string]interface{})[key]; ok {
+				switch v.(type) {
+				case string:
+					return nil
+				default:
+					return fmt.Errorf(errortmpl["string"], key)
+				}
+				return nil
+			}
+		}
+	case struct{}:
+		params = structs.Map(params.(struct{}))
+		for _, v := range params.(map[string]interface{}) {
+			if _, ok := params.(map[string]interface{})[key]; ok {
+				switch v.(type) {
+				case string:
+					return nil
+				default:
+					return fmt.Errorf(errortmpl["string"], key)
+				}
+				return nil
+			}
 		}
 	}
 	return nil

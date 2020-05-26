@@ -9,8 +9,7 @@ import (
 )
 
 func TestRouter_Get(t *testing.T) {
-	rt := mux.NewRouter()
-	router := NewRouter(rt)
+	router := NewRouter(mux.NewRouter())
 	router.Get("/test", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(200)
 		return
@@ -27,8 +26,7 @@ func TestRouter_Get(t *testing.T) {
 }
 
 func TestRouter_Post(t *testing.T) {
-	rt := mux.NewRouter()
-	router := NewRouter(rt)
+	router := NewRouter(mux.NewRouter())
 	router.Post("/test", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(200)
 		return

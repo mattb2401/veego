@@ -13,9 +13,28 @@ func TestValidation_ValidParameters(t *testing.T) {
 	validator := Validator{}
 	if err := validator.Validate(map[string]string{
 		"username": "required|max:20|min:4",
-		"email":    "required",
+		"email":    "required|string",
 		"password": "max:40",
 	}, params); err != nil {
+		t.Errorf("didnt expect any errors but we got %v", err.Error())
+	}
+}
+
+func TestValidation_ValidStructParameters(t *testing.T) {
+	type params struct {
+		Username string
+		Email string
+		Password string
+	}
+	var p params
+	p.Username = "veego"
+	p.Email = "veego@email.com"
+	p.Password = "supasecret"
+	validator := Validator{}
+	if err := validator.Validate(map[string]string{
+		"username": "required|max:20|min:4",
+		"email":    "required|string",
+	}, p); err != nil {
 		t.Errorf("didnt expect any errors but we got %v", err.Error())
 	}
 }

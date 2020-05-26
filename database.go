@@ -32,7 +32,7 @@ func NewDatabaseManager(databaseURL string) *databaseManager {
 }
 
 func (d *databaseManager) Connect() (*gorm.DB, error) {
-	params, err := d.UrlParser()
+	params, err := d.urlParser()
 	if err != nil {
 		return nil, err
 	}
@@ -63,7 +63,7 @@ func (d *databaseManager) Connect() (*gorm.DB, error) {
 	}
 }
 
-func (d *databaseManager) UrlParser() (*dBParams, error) {
+func (d *databaseManager) urlParser() (*dBParams, error) {
 	var host, port, path, password string
 	var err error
 	u, err := url.Parse(d.DatabaseURL)

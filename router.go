@@ -6,18 +6,26 @@ import (
 	"github.com/gorilla/mux"
 )
 
-type BaseRouter struct {
+type router struct {
 	Router *mux.Router
 }
 
-func NewRouter(router *mux.Router) *BaseRouter {
-	return &BaseRouter{Router: router}
+func NewRouter(r *mux.Router) *router {
+	return &router{Router: r}
 }
 
-func (r *BaseRouter) Post(path string, handler func(w http.ResponseWriter, r *http.Request)) {
+func (r *router) Post(path string, handler func(w http.ResponseWriter, r *http.Request)) {
 	r.Router.HandleFunc(path, handler).Methods("POST")
 }
 
-func (r *BaseRouter) Get(path string, handler func(w http.ResponseWriter, r *http.Request)) {
+func (r *router) Get(path string, handler func(w http.ResponseWriter, r *http.Request)) {
 	r.Router.HandleFunc(path, handler).Methods("GET")
+}
+
+func (r *router) Put(path string, handler func(w http.ResponseWriter, r *http.Request)) {
+	r.Router.HandleFunc(path, handler).Methods("PUT")
+}
+
+func (r *router) Delete(path string, handler func(w http.ResponseWriter, r *http.Request)) {
+	r.Router.HandleFunc(path, handler).Methods("DELETE")
 }

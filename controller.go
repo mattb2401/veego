@@ -1,8 +1,11 @@
 package veego
 
-type controller struct {
+import "github.com/mattb2401/veego/validation"
+
+type Controller struct {
+	validation.Validator
 }
 
-func NewController() *controller {
-	return &controller{}
+func NewController() *Controller {
+	return &Controller{}
 }
