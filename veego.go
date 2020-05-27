@@ -14,14 +14,14 @@ import (
 )
 
 type server struct {
-	Config     *AppConfig
-	BaseRouter *mux.Router
+	config     *AppConfig
+	baseRouter *mux.Router
 }
 
 func NewServer(config *AppConfig, baseRouter *mux.Router) *server {
 	server := &server{
-		Config:     config,
-		BaseRouter: baseRouter,
+		config:     config,
+		baseRouter: baseRouter,
 	}
 	return server
 }
@@ -36,20 +36,20 @@ func (s *server) Run() error {
 		cancel()
 	}()
 	server := &http.Server{
-		Addr:         fmt.Sprintf("%s:%s", s.Config.Host, s.Config.Port),
+		Addr:         fmt.Sprintf("%s:%s", s.config.Host, s.config.Port),
 		WriteTimeout: time.Second * 15,
 		ReadTimeout:  time.Second * 15,
 		IdleTimeout:  time.Second * 60,
 		Handler: h.CORS(h.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization", "Access-Control-Allow-Origin"}),
 			h.AllowedMethods([]string{"GET"}),
-			h.AllowedOrigins([]string{"*"}))(s.BaseRouter),
+			h.AllowedOrigins([]string{"*"}))(s.baseRouter),
 	}
 	go func() {
 		if err := server.ListenAndServe(); err != nil {
 			log.Fatalf("serve failed: %v \n", err.Error())
 		}
 	}()
-	fmt.Printf("Appliction running on %s:%s...\n", s.Config.Host, s.Config.Port)
+	fmt.Printf("Appliction running on %s:%s...\n", s.config.Host, s.config.Port)
 	<-ctx.Done()
 	fmt.Printf("Appliction stopped \n")
 	ctxShutDown, cancel := context.WithTimeout(context.Background(), 5*time.Second)

@@ -13,7 +13,7 @@ import (
 )
 
 type databaseManager struct {
-	DatabaseURL string
+	databaseURL string
 }
 
 type dBParams struct {
@@ -27,7 +27,7 @@ type dBParams struct {
 
 func NewDatabaseManager(databaseURL string) *databaseManager {
 	return &databaseManager{
-		DatabaseURL: databaseURL,
+		databaseURL: databaseURL,
 	}
 }
 
@@ -66,7 +66,7 @@ func (d *databaseManager) Connect() (*gorm.DB, error) {
 func (d *databaseManager) urlParser() (*dBParams, error) {
 	var host, port, path, password string
 	var err error
-	u, err := url.Parse(d.DatabaseURL)
+	u, err := url.Parse(d.databaseURL)
 	if err != nil {
 		return &dBParams{}, err
 	}

@@ -13,7 +13,7 @@ type router struct {
 func NewRouter(r *mux.Router) *router {
 	return &router{Router: r}
 }
-
+//x
 func (r *router) Post(path string, handler func(w http.ResponseWriter, r *http.Request)) {
 	r.Router.HandleFunc(path, handler).Methods("POST")
 }
