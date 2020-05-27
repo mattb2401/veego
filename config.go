@@ -3,6 +3,7 @@ package veego
 import (
 	"io/ioutil"
 
+	"encoding/json"
 	"github.com/joho/godotenv"
 	"gopkg.in/yaml.v2"
 
@@ -10,9 +11,9 @@ import (
 )
 
 type AppConfig struct {
-	Host        string `yaml:"host"`
-	Port        string `yaml:"port"`
-	DatabaseURL string `yaml:"database_url"`
+	Host        string `yaml:"host" json:"host"`
+	Port        string `yaml:"port" json:"port"`
+	DatabaseURL string `yaml:"database_url" json:"database_url"`
 }
 
 func NewAppConfig() *AppConfig {
@@ -20,7 +21,7 @@ func NewAppConfig() *AppConfig {
 }
 
 // LoadFromFile : loads config details from file
-func (ac *AppConfig) LoadYML(file string) (*AppConfig, error) {
+func (a *AppConfig) LoadYML(file string) (*AppConfig, error) {
 	yamlFile, err := ioutil.ReadFile(file)
 	if err != nil {
 		return nil, err
@@ -32,7 +33,7 @@ func (ac *AppConfig) LoadYML(file string) (*AppConfig, error) {
 	return config, nil
 }
 
-func (ac *AppConfig) LoadEnv(file string) (*AppConfig, error) {
+func (a *AppConfig) LoadEnv(file string) (*AppConfig, error) {
 	err := godotenv.Load(file)
 	if err != nil {
 		return nil, err
@@ -42,4 +43,16 @@ func (ac *AppConfig) LoadEnv(file string) (*AppConfig, error) {
 		Port:        os.Getenv("port"),
 		DatabaseURL: os.Getenv("database_url"),
 	}, nil
+}
+
+func (a *AppConfig) LoadJSON(file string) (*AppConfig, error) {
+	jsonFile, err := ioutil.ReadFile(file)
+	if err != nil {
+		return nil, err
+	}
+	config := &AppConfig{}
+	if err := json.Unmarshal(jsonFile, config); err != nil {
+		return nil, err
+	}
+	return config, nil
 }

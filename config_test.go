@@ -20,6 +20,17 @@ func TestAppConfig_LoadYML(t *testing.T) {
 		t.Errorf("didn't expect errorrs but got %v", err.Error())
 	}
 	if conf.Host != "0.0.0.0" {
-		t.Errorf("TestAppConfig_LoadEnv expected 0.0.0.0 but got %v", conf.Host)
+		t.Errorf("TestAppConfig_LoadYML expected 0.0.0.0 but got %v", conf.Host)
+	}
+}
+
+func TestAppConfig_LoadJSON(t *testing.T) {
+	config := NewAppConfig()
+	conf, err := config.LoadJSON("config.json")
+	if err != nil {
+		t.Errorf("didn't expect errorrs but got %v", err.Error())
+	}
+	if conf.Host != "0.0.0.0" {
+		t.Errorf("TestAppConfig_LoadJSON expected 0.0.0.0 but got %v", conf.Host)
 	}
 }

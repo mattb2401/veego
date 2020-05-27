@@ -3,6 +3,7 @@ package validation
 import (
 	"fmt"
 	"github.com/fatih/structs"
+	"reflect"
 	"strconv"
 	"strings"
 )
@@ -90,8 +91,8 @@ func (v *Validator) Validate(args map[string]string, params interface{}) error {
 }
 
 func (v *Validator) checkRequired(key string, params interface{}) error {
-	switch params.(type) {
-	case map[string]interface{}:
+	switch reflect.ValueOf(params).Kind() {
+	case reflect.Map:
 		for _, v := range params.(map[string]interface{}) {
 			if _, ok := params.(map[string]interface{})[key]; ok {
 				switch v.(type) {
@@ -108,10 +109,10 @@ func (v *Validator) checkRequired(key string, params interface{}) error {
 				return fmt.Errorf(errortmpl["required"], key)
 			}
 		}
-	case struct{}:
-		params = structs.Map(params.(struct{}))
+	case reflect.Struct:
+		params = structs.Map(params)
 		for _, v := range params.(map[string]interface{}) {
-			if _, ok := params.(map[string]interface{})[key]; ok {
+			if _, ok := params.(map[string]interface{})[strings.Title(key)]; ok {
 				switch v.(type) {
 				case int:
 					if v.(int) <= 0 {
@@ -126,13 +127,15 @@ func (v *Validator) checkRequired(key string, params interface{}) error {
 				return fmt.Errorf(errortmpl["required"], key)
 			}
 		}
+	default:
+		return fmt.Errorf("invalid interface provided: %v", reflect.TypeOf(params))
 	}
 	return nil
 }
 
 func (v *Validator) checkMaxLength(key string, rqlen int, params interface{}) error {
-	switch params.(type) {
-	case map[string]interface{}:
+	switch reflect.ValueOf(params).Kind() {
+	case reflect.Map:
 		for _, v := range params.(map[string]interface{}) {
 			if _, ok := params.(map[string]interface{})[key]; ok {
 				switch v.(type) {
@@ -146,10 +149,10 @@ func (v *Validator) checkMaxLength(key string, rqlen int, params interface{}) er
 				return nil
 			}
 		}
-	case struct{}:
-		params = structs.Map(params.(struct{}))
+	case reflect.Struct:
+		params = structs.Map(params)
 		for _, v := range params.(map[string]interface{}) {
-			if _, ok := params.(map[string]interface{})[key]; ok {
+			if _, ok := params.(map[string]interface{})[strings.Title(key)]; ok {
 				switch v.(type) {
 				case string:
 					if len(v.(string)) > rqlen {
@@ -161,13 +164,15 @@ func (v *Validator) checkMaxLength(key string, rqlen int, params interface{}) er
 				return nil
 			}
 		}
+	default:
+		return fmt.Errorf("invalid interface provided: %v", reflect.TypeOf(params))
 	}
 	return nil
 }
 
 func (v *Validator) checkMinLength(key string, rqlen int, params interface{}) error {
-	switch params.(type) {
-	case map[string]interface{}:
+	switch reflect.ValueOf(params).Kind() {
+	case reflect.Map:
 		for _, v := range params.(map[string]interface{}) {
 			if _, ok := params.(map[string]interface{})[key]; ok {
 				switch v.(type) {
@@ -182,10 +187,10 @@ func (v *Validator) checkMinLength(key string, rqlen int, params interface{}) er
 			}
 		}
 		return nil
-	case struct{}:
-		params = structs.Map(params.(struct{}))
+	case reflect.Struct:
+		params = structs.Map(params)
 		for _, v := range params.(map[string]interface{}) {
-			if _, ok := params.(map[string]interface{})[key]; ok {
+			if _, ok := params.(map[string]interface{})[strings.Title(key)]; ok {
 				switch v.(type) {
 				case string:
 					if len(v.(string)) <= rqlen {
@@ -197,16 +202,17 @@ func (v *Validator) checkMinLength(key string, rqlen int, params interface{}) er
 				return nil
 			}
 		}
-		return nil
+	default:
+		return fmt.Errorf("invalid interface provided: %v", reflect.TypeOf(params))
 	}
 	return nil
 }
 
 func (v *Validator) checkIfString(key string, params interface{}) error {
-	switch params.(type) {
-	case map[string]interface{}:
+	switch reflect.ValueOf(params).Kind() {
+	case reflect.Map:
 		for _, v := range params.(map[string]interface{}) {
-			if _, ok := params.(map[string]interface{})[key]; ok {
+			if _, ok := params.(map[string]interface{})[strings.Title(key)]; ok {
 				switch v.(type) {
 				case string:
 					return nil
@@ -216,8 +222,8 @@ func (v *Validator) checkIfString(key string, params interface{}) error {
 				return nil
 			}
 		}
-	case struct{}:
-		params = structs.Map(params.(struct{}))
+	case reflect.Struct:
+		params = structs.Map(params)
 		for _, v := range params.(map[string]interface{}) {
 			if _, ok := params.(map[string]interface{})[key]; ok {
 				switch v.(type) {
