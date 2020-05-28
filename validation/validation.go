@@ -111,8 +111,8 @@ func (v *Validator) checkRequired(key string, params interface{}) error {
 		}
 	case reflect.Struct:
 		params = structs.Map(params)
-		for _, v := range params.(map[string]interface{}) {
-			if _, ok := params.(map[string]interface{})[strings.Title(key)]; ok {
+		for k, v := range params.(map[string]interface{}) {
+			if k == strings.Title(key) {
 				switch v.(type) {
 				case int:
 					if v.(int) <= 0 {
@@ -122,9 +122,9 @@ func (v *Validator) checkRequired(key string, params interface{}) error {
 					if len(v.(string)) <= 0 {
 						return fmt.Errorf(errortmpl["required"], key)
 					}
+				default:
+					return fmt.Errorf(errortmpl["required"], key)
 				}
-			} else {
-				return fmt.Errorf(errortmpl["required"], key)
 			}
 		}
 	default:
@@ -151,8 +151,8 @@ func (v *Validator) checkMaxLength(key string, rqlen int, params interface{}) er
 		}
 	case reflect.Struct:
 		params = structs.Map(params)
-		for _, v := range params.(map[string]interface{}) {
-			if _, ok := params.(map[string]interface{})[strings.Title(key)]; ok {
+		for k, v := range params.(map[string]interface{}) {
+			if k == strings.Title(key) {
 				switch v.(type) {
 				case string:
 					if len(v.(string)) > rqlen {
@@ -177,7 +177,7 @@ func (v *Validator) checkMinLength(key string, rqlen int, params interface{}) er
 			if _, ok := params.(map[string]interface{})[key]; ok {
 				switch v.(type) {
 				case string:
-					if len(v.(string)) <= rqlen {
+					if len(v.(string)) < rqlen {
 						return fmt.Errorf(errortmpl["min"], key, rqlen)
 					}
 				default:
@@ -189,11 +189,11 @@ func (v *Validator) checkMinLength(key string, rqlen int, params interface{}) er
 		return nil
 	case reflect.Struct:
 		params = structs.Map(params)
-		for _, v := range params.(map[string]interface{}) {
-			if _, ok := params.(map[string]interface{})[strings.Title(key)]; ok {
+		for k, v := range params.(map[string]interface{}) {
+			if k == strings.Title(key) {
 				switch v.(type) {
 				case string:
-					if len(v.(string)) <= rqlen {
+					if len(v.(string)) < rqlen {
 						return fmt.Errorf(errortmpl["min"], key, rqlen)
 					}
 				default:
@@ -224,8 +224,8 @@ func (v *Validator) checkIfString(key string, params interface{}) error {
 		}
 	case reflect.Struct:
 		params = structs.Map(params)
-		for _, v := range params.(map[string]interface{}) {
-			if _, ok := params.(map[string]interface{})[key]; ok {
+		for k, v := range params.(map[string]interface{}) {
+			if k == strings.Title(key) {
 				switch v.(type) {
 				case string:
 					return nil

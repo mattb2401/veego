@@ -1,6 +1,8 @@
 package validation
 
 import (
+	"encoding/json"
+	"fmt"
 	"testing"
 )
 
@@ -21,19 +23,28 @@ func TestValidation_ValidParameters(t *testing.T) {
 }
 
 func TestValidation_ValidStructParameters(t *testing.T) {
+
 	type params struct {
-		Username string
-		Email string
-		Password string
+		FirstName string `json:"firstName"`
+		LastName  string `json:"lastName"`
+		Msisdn string `json:"msisdn"`
+	}
+	customer := params {
+		FirstName:        "Matt",
+		LastName:         "Sebuuma",
+		Msisdn:           "256777000000",
 	}
 	var p params
-	p.Username = "veego"
-	p.Email = "veego@email.com"
-	p.Password = "supasecret"
+	bt := []byte(fmt.Sprintf(`{"firstName": "%s", "lastName": "%s", "msisdn": "%s"}`, customer.FirstName, customer.LastName, customer.Msisdn))
+	err := json.Unmarshal(bt, &p)
+	if err != nil {
+		t.Errorf("didnt expect any errors but we got %v", err.Error())
+	}
 	validator := Validator{}
 	if err := validator.Validate(map[string]string{
-		"username": "required|max:20|min:4",
-		"email":    "required|string",
+		"firstName": "required",
+		"lastName": "required",
+		"msisdn": "required|max:12|min:12",
 	}, p); err != nil {
 		t.Errorf("didnt expect any errors but we got %v", err.Error())
 	}
