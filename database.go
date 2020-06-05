@@ -42,21 +42,18 @@ func (d *databaseManager) Connect() (*gorm.DB, error) {
 		if err != nil {
 			return nil, err
 		}
-		defer db.Close()
 		return db, nil
 	case "postgres":
 		db, err := gorm.Open("postgres", fmt.Sprintf("host=%s port=%s user=%s dbname=%s password=%s", params.Host, params.Port, params.Username, params.Database, params.Password))
 		if err != nil {
 			return nil, err
 		}
-		defer db.Close()
 		return db, nil
 	case "mssql":
 		db, err := gorm.Open("mssql", fmt.Sprintf("sqlserver://%s:%s@%s:%s?database=%s", params.Username, params.Password, params.Host, params.Port, params.Database))
 		if err != nil {
 			return nil, err
 		}
-		defer db.Close()
 		return db, nil
 	default:
 		return nil, errors.New("unknown Database schema")
