@@ -16,7 +16,6 @@ import (
 
 type server struct {
 	baseRouter *mux.Router
-	session    *scs.SessionManager
 }
 
 var (
@@ -24,10 +23,9 @@ var (
 	port = "8080"
 )
 
-func NewServer(baseRouter *mux.Router, session *scs.SessionManager) *server {
+func NewServer(baseRouter *mux.Router) *server {
 	return &server{
 		baseRouter: baseRouter,
-		session:    session,
 	}
 }
 
@@ -71,7 +69,7 @@ func (s *server) Run(args ...interface{}) error {
 	return nil
 }
 
-func (s *server) RunWithSession(args ...interface{}) error {
+func (s *server) RunWithSession(session *scs.SessionManager, args ...interface{}) error {
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt)
 	ctx, cancel := context.WithCancel(context.Background())
@@ -89,7 +87,7 @@ func (s *server) RunWithSession(args ...interface{}) error {
 		WriteTimeout: time.Second * 15,
 		ReadTimeout:  time.Second * 15,
 		IdleTimeout:  time.Second * 60,
-		Handler:      s.session.LoadAndSave(s.baseRouter),
+		Handler:      session.LoadAndSave(s.baseRouter),
 	}
 	go func() {
 		if err := server.ListenAndServe(); err != nil {
