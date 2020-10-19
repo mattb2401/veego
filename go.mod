@@ -3,6 +3,7 @@ module github.com/mattb2401/veego
 go 1.12
 
 require (
+	github.com/alexedwards/scs/v2 v2.4.0
 	github.com/clbanning/anyxml v1.2.2 // indirect
 	github.com/fatih/structs v1.1.0
 	github.com/gorilla/handlers v1.4.2
