@@ -31,7 +31,7 @@ func NewDatabaseManager(databaseURL string) *databaseManager {
 	}
 }
 
-func (d *databaseManager) Connect() (*gorm.DB, error) {
+func (d *databaseManager) Connect(options ...map[string]interface{}) (*gorm.DB, error) {
 	params, err := d.urlParser()
 	if err != nil {
 		return nil, err
@@ -44,7 +44,7 @@ func (d *databaseManager) Connect() (*gorm.DB, error) {
 		}
 		return db, nil
 	case "postgres":
-		db, err := gorm.Open("postgres", fmt.Sprintf("host=%s port=%s user=%s dbname=%s password=%s", params.Host, params.Port, params.Username, params.Database, params.Password))
+		db, err := gorm.Open("postgres", fmt.Sprintf("host=%s port=%s user=%s dbname=%s password=%s, sslmode=%s", params.Host, params.Port, params.Username, params.Database, params.Password, options[0]["ssl_mode"]))
 		if err != nil {
 			return nil, err
 		}
