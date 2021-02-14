@@ -14,6 +14,17 @@ import (
 
 type databaseManager struct {
 	databaseURL string
+	options *options
+}
+
+var (
+	defaultSSLMode = "disable"
+)
+
+type DBOptions func(*options)
+
+type options struct {
+	SSLMode string
 }
 
 type dBParams struct {
@@ -25,13 +36,25 @@ type dBParams struct {
 	Port     string
 }
 
-func NewDatabaseManager(databaseURL string) *databaseManager {
+func NewDatabaseManager(databaseURL string, options ...DBOptions) *databaseManager {
 	return &databaseManager{
 		databaseURL: databaseURL,
+		options: parseOptions(options),
 	}
 }
 
-func (d *databaseManager) Connect(options ...map[string]interface{}) (*gorm.DB, error) {
+func parseOptions(dbOptions []DBOptions) *options {
+	opts  := &options{
+		SSLMode: defaultSSLMode,
+	}
+	for _, option := range dbOptions {
+		option(opts)
+	}
+	return opts
+}
+
+
+func (d *databaseManager) Connect() (*gorm.DB, error) {
 	params, err := d.urlParser()
 	if err != nil {
 		return nil, err
@@ -44,7 +67,7 @@ func (d *databaseManager) Connect(options ...map[string]interface{}) (*gorm.DB, 
 		}
 		return db, nil
 	case "postgres":
-		db, err := gorm.Open("postgres", fmt.Sprintf("host=%s port=%s user=%s dbname=%s password=%s, sslmode=%s", params.Host, params.Port, params.Username, params.Database, params.Password, options[0]["ssl_mode"]))
+		db, err := gorm.Open("postgres", fmt.Sprintf("host=%s port=%s user=%s dbname=%s password=%s, sslmode=%s", params.Host, params.Port, params.Username, params.Database, params.Password, d.options.SSLMode))
 		if err != nil {
 			return nil, err
 		}
@@ -57,6 +80,12 @@ func (d *databaseManager) Connect(options ...map[string]interface{}) (*gorm.DB, 
 		return db, nil
 	default:
 		return nil, errors.New("unknown Database schema")
+	}
+}
+
+func ConfigureSSLMode(state string) DBOptions {
+	return func(o *options) {
+		o.SSLMode = state
 	}
 }
 
