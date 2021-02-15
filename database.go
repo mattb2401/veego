@@ -14,7 +14,7 @@ import (
 
 type databaseManager struct {
 	databaseURL string
-	options *options
+	options     *options
 }
 
 var (
@@ -39,12 +39,12 @@ type dBParams struct {
 func NewDatabaseManager(databaseURL string, options ...DBOptions) *databaseManager {
 	return &databaseManager{
 		databaseURL: databaseURL,
-		options: parseOptions(options),
+		options:     parseOptions(options),
 	}
 }
 
 func parseOptions(dbOptions []DBOptions) *options {
-	opts  := &options{
+	opts := &options{
 		SSLMode: defaultSSLMode,
 	}
 	for _, option := range dbOptions {
@@ -52,7 +52,6 @@ func parseOptions(dbOptions []DBOptions) *options {
 	}
 	return opts
 }
-
 
 func (d *databaseManager) Connect() (*gorm.DB, error) {
 	params, err := d.urlParser()
@@ -67,7 +66,7 @@ func (d *databaseManager) Connect() (*gorm.DB, error) {
 		}
 		return db, nil
 	case "postgres":
-		db, err := gorm.Open("postgres", fmt.Sprintf("host=%s port=%s user=%s dbname=%s password=%s, sslmode=%s", params.Host, params.Port, params.Username, params.Database, params.Password, d.options.SSLMode))
+		db, err := gorm.Open("postgres", fmt.Sprintf("host=%s port=%s user=%s dbname=%s password=%s sslmode=%s", params.Host, params.Port, params.Username, params.Database, params.Password, d.options.SSLMode))
 		if err != nil {
 			return nil, err
 		}
